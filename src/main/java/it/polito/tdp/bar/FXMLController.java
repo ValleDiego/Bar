@@ -24,9 +24,11 @@ public class FXMLController {
 	@FXML
 	void handleSimula(ActionEvent event) {
 		txtResult.clear();
+		for(int i = 0; i<5; i++) {
 		Statistiche stat = model.simula();
 		txtResult.appendText("Statistiche:\n\n# Clienti totali: "+stat.getClientiTot()+"\nClienti Soddisfatti: "+stat.getClientiSoddisfatti()+"\nClienti insoddisfatti: "+stat.getClientiInsoddisfatti());
-	}
+		}
+	}	
 
 	@FXML // This method is called by the FXMLLoader when initialization is complete
 	void initialize() {

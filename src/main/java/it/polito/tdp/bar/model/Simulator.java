@@ -30,6 +30,48 @@ public class Simulator {
 	//Statistiche
 	private Statistiche statistiche;
 	
+	private void creaTavolo(int quantita, int dimensione) {
+		for(int i =0; i<quantita; i++) {
+			this.tavoli.add(new Tavolo(dimensione, false));
+		}
+	}
+
+	
+	private void creaTavoli() {
+		// TODO Auto-generated method stub
+		creaTavolo(2,10);
+		creaTavolo(4,8);
+		creaTavolo(4,6);
+		creaTavolo(5,4);
+		
+		Collections.sort(this.tavoli, new Comparator<Tavolo>() {
+
+			@Override
+			public int compare(Tavolo o1, Tavolo o2) {
+				// TODO Auto-generated method stub
+				return o1.getPosti()-o2.getPosti();
+			}
+			
+		});
+				
+	}
+	private void creaEventi() {
+		// TODO Auto-generated method stub
+		Duration arrivo = Duration.ofMinutes(0);
+		for(int i =0; i<this.NUM_EVENTI; i++) {
+			int nPersone = (int) (Math.random() * this.NUM_PERSONE_MAX + 1);//dimenticarsi questa parentesi rompe tutto
+			Duration durata = Duration.ofMinutes(this.DURATA_MIN + (int) (Math.random() * (this.DURATA_MAX - this.DURATA_MIN + 1)));
+			double tolleranza = Math.random() * this.TOLLERANZA_MAX;
+			
+			Event e = new Event(arrivo, EventType.ARRIVO_GRUPPO_CLIENTI, nPersone, durata, tolleranza, null);
+			this.queue.add(e);
+			arrivo = arrivo.plusMinutes((int) Math.random() * this.T_ARRIVO_MAX+1);
+		}
+		
+		
+		
+	}
+	
 	//si comincia!
 	public void init() {
 		this.queue = new PriorityQueue<Event>();
@@ -55,10 +97,11 @@ public class Simulator {
 			//2 vincoli: i clienti devono occupare almeno il 50% dei posti, e deve essere il tavolo più piccolo possibile
 			Tavolo tavolo = null;
 			for(Tavolo t: this.tavoli) {
-				if(!t.isOccupato() && t.getPosti()>=(e.getnPersone()) && t.getPosti() * this.OCCUPAZIONE_MAX <= e.getnPersone()) {
+				if(!t.isOccupato() && t.getPosti()>= e.getnPersone() && t.getPosti() * this.OCCUPAZIONE_MAX <= e.getnPersone()) {
 					tavolo = t;
 					break;
 				}
+			}
 				if(tavolo!=null) {
 					System.out.format("\nTrovato un tavolo da %d per %d persone", tavolo.getPosti(), e.getnPersone());
 					statistiche.incrementaSoddisfatti(e.getnPersone());
@@ -76,7 +119,7 @@ public class Simulator {
 						System.out.format("\n%d persone vanno a casa", e.getnPersone());
 					}
 				}
-			}
+			
 			
 			
 			break;
@@ -86,48 +129,11 @@ public class Simulator {
 		}
 	}
 
-	private void creaEventi() {
-		// TODO Auto-generated method stub
-		Duration arrivo = Duration.ofMinutes(0);
-		for(int i =0; i<this.NUM_EVENTI; i++) {
-			int nPersone = (int) Math.random() * this.NUM_PERSONE_MAX + 1;
-			Duration durata = Duration.ofMinutes(this.DURATA_MIN + (int) Math.random() * (this.DURATA_MAX - this.DURATA_MIN + 1));
-			double tolleranza = Math.random() * this.TOLLERANZA_MAX;
-			
-			Event e = new Event(arrivo, EventType.ARRIVO_GRUPPO_CLIENTI, nPersone, durata, tolleranza, null);
-			this.queue.add(e);
-			arrivo = arrivo.plusMinutes((int) Math.random() * this.T_ARRIVO_MAX+1);
-		}
-		
-		
-		
-	}
-
-	private void creaTavoli() {
-		// TODO Auto-generated method stub
-		creaTavolo(2,10);
-		creaTavolo(4,8);
-		creaTavolo(4,6);
-		creaTavolo(5,4);
-		
-		Collections.sort(this.tavoli, new Comparator<Tavolo>() {
-
-			@Override
-			public int compare(Tavolo o1, Tavolo o2) {
-				// TODO Auto-generated method stub
-				return o1.getPosti()-o2.getPosti();
-			}
-			
-		});
-				
-	}
 	
-	private void creaTavolo(int quantita, int dimensione) {
-		for(int i =0; i<quantita; i++) {
-			this.tavoli.add(new Tavolo(dimensione, false));
-		}
-	}
 
+	
+	
+	
 	public Statistiche getStatistiche() {
 		// TODO Auto-generated method stub
 		return this.statistiche;
